@@ -1,43 +1,55 @@
-import React, { useState } from 'react';
-import axios from 'axios';
+import React, { useState } from "react";
+import axios from "axios";
+
 const Signup = () => {
   const [formData, setFormData] = useState({
-    rollNo: '',
-    enrollmentNo: '',
-    firstName: '',
-    primaryClub: '',
-    password: '',
-    confirmPassword: ''
+    rollNo: "",
+    enrollmentNo: "",
+    firstName: "",
+    primaryClub: "",
+    password: "",
+    confirmPassword: "",
   });
 
-  const clubs = ['PASC', 'DEBSOC', 'IEEE', 'CSI', 'Art Circle', 'Game Dev Utopia', 'Robotics']; 
+  const clubs = ["PASC", "DEBSOC", "IEEE", "CSI", "Art Circle", "Game Dev Utopia", "Robotics"];
 
   const handleChange = (e) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
+    setFormData({ ...formData, [e.target.name]: e.target.value.trim() });
   };
 
-  const handleSubmit = async(e) => {
+  const validateForm = () => {
+    if (!formData.rollNo || !formData.enrollmentNo || !formData.firstName || !formData.password) {
+      alert("All fields are required.");
+      return false;
+    }
+    if (formData.password.length < 6) {
+      alert("Password must be at least 6 characters.");
+      return false;
+    }
+    if (formData.password !== formData.confirmPassword) {
+      alert("Passwords do not match!");
+      return false;
+    }
+    return true;
+  };
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
+    if (!validateForm()) return;
+
     try {
-      if (formData.password !== formData.confirmPassword) {
-        alert('Passwords do not match!');
-        return;
-      }
-      // Send POST request to backend
-      const response = await axios.post('http://localhost:3000/api/signup', {
+      const response = await axios.post("http://localhost:3000/api/signup", {
         rollNo: formData.rollNo,
         enrollmentNo: formData.enrollmentNo,
         firstName: formData.firstName,
         primaryClub: formData.primaryClub,
-        password: formData.password
+        password: formData.password,
       });
 
-      console.log('Signup successful:', response.data);
-      alert('Registration successful!');
-      // Redirect to login or other page
+      alert("Registration successful!");
+      console.log("Signup successful:", response.data);
     } catch (error) {
-      console.error('Signup error:', error.response?.data?.message || error.message);
-      alert(error.response?.data?.message || 'Registration failed');
+      alert(error.response?.data?.message || "Registration failed");
     }
   };
 
@@ -57,6 +69,7 @@ const Signup = () => {
               required
             />
           </div>
+
           <div className="mb-4">
             <label className="block text-sm font-medium">Enrollment No.</label>
             <input
@@ -68,6 +81,7 @@ const Signup = () => {
               required
             />
           </div>
+
           <div className="mb-4">
             <label className="block text-sm font-medium">First Name</label>
             <input
@@ -79,6 +93,7 @@ const Signup = () => {
               required
             />
           </div>
+
           <div className="mb-4">
             <label className="block text-sm font-medium">Primary Club</label>
             <select
@@ -90,10 +105,13 @@ const Signup = () => {
             >
               <option value="">Select a club</option>
               {clubs.map((club, index) => (
-                <option key={index} value={club}>{club}</option>
+                <option key={index} value={club}>
+                  {club}
+                </option>
               ))}
             </select>
           </div>
+
           <div className="mb-4">
             <label className="block text-sm font-medium">Set Password</label>
             <input
@@ -105,6 +123,7 @@ const Signup = () => {
               required
             />
           </div>
+
           <div className="mb-4">
             <label className="block text-sm font-medium">Confirm Password</label>
             <input
@@ -116,10 +135,8 @@ const Signup = () => {
               required
             />
           </div>
-          <button
-            type="submit"
-            className="w-full bg-green-500 text-white py-2 rounded-lg hover:bg-green-600"
-          >
+
+          <button type="submit" className="w-full bg-green-500 text-white py-2 rounded-lg hover:bg-green-600">
             Sign Up
           </button>
         </form>
